@@ -1,0 +1,63 @@
+#!/usr/bin/env python3
+
+import json
+import subprocess as sp
+
+# Script to retrieve all items from CopyQ
+copyq_script_getAll = r"""
+var result=[];
+for (var i = 0; i < size(); ++i) {
+    var obj = {};
+    obj.row = i;
+    obj.mimetypes = str(read("?", i)).split("\n");
+    obj.mimetypes.pop();
+    obj.text = str(read(i));
+    result.push(obj);
+}
+JSON.stringify(result);
+"""
+
+def run_copyq_script(script):
+    """Run a CopyQ script and return the output."""
+    p = sp.run('copyq -'.split(), input=script, encoding='utf-8', stdout=sp.PIPE, stderr=sp.PIPE)
+    if p.returncode != 0:
+        print(f"Error executing CopyQ script: {p.stderr}")
+        return None
+    if not p.stdout.strip():
+        print("No output from CopyQ.")
+        return None
+    return p.stdout
+
+def main():
+    # Run the CopyQ script
+    output = run_copyq_script(copyq_script_getAll)
+    if output is None:
+        return
+
+    # Load the JSON output
+    try:
+        json_arr = json.loads(output)
+    except json.JSONDecodeError as e:
+        print(f"JSON decode error: {e}")
+        return
+
+    items = []
+    for json_obj in json_arr:
+        text = json_obj['text']
+        text = " ".join(filter(None, text.replace("\n", " ").split(" ")))
+        items.append(text)
+
+    title = 'rofi-copyq'
+    rofi_command = f'rofi -show drun -theme ~/.config/rofi/launchers/type-7/style-5.rasi -i -dmenu -p {title} -format i'.split()
+    rofi_input = '\n'.join(items)
+
+    # Run rofi to select an item
+    p = sp.run(rofi_command, input=rofi_input, encoding='utf-8', stdout=sp.PIPE, stderr=sp.PIPE)
+    if p.returncode == 0:
+        num = p.stdout.strip()
+        if num.isdigit():
+            sp.run(f'copyq select({num});'.split(),
+                   encoding='utf-8', stdout=sp.PIPE, stderr=sp.PIPE)
+
+if __name__ == '__main__':
+    main()

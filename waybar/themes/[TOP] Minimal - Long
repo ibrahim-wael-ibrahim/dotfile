@@ -1,0 +1,49 @@
+/* ---- 💫 https://github.com/JaKooLit 💫 ---- */
+
+// ### Minimal - Long ### //
+
+{
+"include": "~/.dotfiles/waybar/modules",
+"layer": "top",
+"output":"eDP-1",
+// "mode": "dock",
+"exclusive": true,
+"passthrough": false,
+"position": "top",
+"spacing": 6,
+"fixed-center": true,
+"ipc": false,
+"margin-top": 3,
+"margin-left": 8,
+"margin-right": 8,
+"modules-left": [
+	"custom/menu",
+	"custom/separator#blank_2",
+	"group/motherboard",
+	"custom/separator#blank_2",
+	// "mpris",
+	// "custom/separator#blank_2",
+	"custom/swaync",
+	// "hyprland/window",
+	"custom/separator#line", 
+
+	"custom/cava_mviz",
+	],
+"modules-center": [
+	"hyprland/workspaces#ibrahim",
+	"custom/separator#line", 
+	"clock",
+
+],
+"modules-right": [
+	"network",
+	"bluetooth",
+	"custom/separator#blank_2",
+	"group/laptop",
+	"custom/separator#blank_2",
+	"group/audio",
+	"custom/separator#blank_2",
+	"custom/power",
+	],
+
+}
